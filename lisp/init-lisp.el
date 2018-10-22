@@ -26,15 +26,16 @@
   (add-hook 'after-init-hook 'ipretty-mode))
 
 
-(defadvice pp-display-expression (after sanityinc/make-read-only (expression out-buffer-name) activate)
+(defun sanityinc/make-read-only (expression out-buffer-name)
   "Enable `view-mode' in the output buffer - if any - so it can be closed with `\"q\"."
   (when (get-buffer out-buffer-name)
     (with-current-buffer out-buffer-name
       (view-mode 1))))
+(advice-add 'pp-display-expression :after 'sanityinc/make-read-only)
 
 
 
-(defun sanityinc/maybe-set-bundled-elisp-readonly ()
+(defun sanityinc/maybe-set-bundled-elisp-readonly (&rest _)
   "If this elisp appears to be part of Emacs, then disallow editing."
   (when (and (buffer-file-name)
              (string-match-p "\\.el\\.gz\\'" (buffer-file-name)))
@@ -47,9 +48,8 @@
 ;; Use C-c C-z to toggle between elisp files and an ielm session
 ;; I might generalise this to ruby etc., or even just adopt the repl-toggle package.
 
-(defvar sanityinc/repl-original-buffer nil
+(defvar-local sanityinc/repl-original-buffer nil
   "Buffer from which we jumped to this REPL.")
-(make-variable-buffer-local 'sanityinc/repl-original-buffer)
 
 (defvar sanityinc/repl-switch-function 'switch-to-buffer-other-window)
 
@@ -81,8 +81,7 @@
   "Locally set `hippie-expand' completion functions for use with Emacs Lisp."
   (make-local-variable 'hippie-expand-try-functions-list)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t)
-  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t)
-  (add-to-list 'hippie-expand-try-functions-list 'my/try-complete-lisp-symbol-without-namespace t))
+  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t))
 
 
 ;; ----------------------------------------------------------------------------
@@ -190,7 +189,7 @@
 (defvar sanityinc/vc-reverting nil
   "Whether or not VC or Magit is currently reverting buffers.")
 
-(defadvice revert-buffer (after sanityinc/maybe-remove-elc activate)
+(defun sanityinc/maybe-remove-elc (&rest _)
   "If reverting from VC, delete any .elc file that will now be out of sync."
   (when sanityinc/vc-reverting
     (when (and (eq 'emacs-lisp-mode major-mode)
@@ -200,13 +199,13 @@
         (when (file-exists-p elc)
           (message "Removing out-of-sync elc file %s" (file-name-nondirectory elc))
           (delete-file elc))))))
+(advice-add 'revert-buffer :after 'sanityinc/maybe-remove-elc)
 
-(defadvice magit-revert-buffers (around sanityinc/reverting activate)
+(defun sanityinc/reverting (orig &rest args)
   (let ((sanityinc/vc-reverting t))
-    ad-do-it))
-(defadvice vc-revert-buffer-internal (around sanityinc/reverting activate)
-  (let ((sanityinc/vc-reverting t))
-    ad-do-it))
+    (apply orig args)))
+(advice-add 'magit-revert-buffers :around 'sanityinc/reverting)
+(advice-add 'vc-revert-buffer-internal :around 'sanityinc/reverting)
 
 
 
@@ -236,7 +235,9 @@
 
 (when (maybe-require-package 'rainbow-mode)
   (add-hook 'sanityinc/theme-mode-hook 'rainbow-mode)
-  (add-hook 'help-mode-hook 'rainbow-mode))
+  (add-hook 'help-mode-hook 'rainbow-mode)
+  (after-load 'rainbow-mode
+    (diminish 'rainbow-mode)))
 
 (when (maybe-require-package 'aggressive-indent)
   ;; Can be prohibitively slow with very long forms
@@ -251,7 +252,8 @@
 (when (maybe-require-package 'flycheck)
   (require-package 'flycheck-package)
   (after-load 'flycheck
-    (flycheck-package-setup)))
+    (after-load 'elisp-mode
+      (flycheck-package-setup))))
 
 
 
