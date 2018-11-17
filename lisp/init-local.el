@@ -5,7 +5,7 @@
 (require 'xah-fly-keys)
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
-(add-hook 'xah-fly-command-mode-activate-hook 'xah-fly-save-buffer-if-file)
+;; (add-hook 'xah-fly-command-mode-activate-hook 'xah-fly-save-buffer-if-file)
 
 (defun my-bindkey-xfk-command-mode ()
   "Define keys for `xah-fly-command-mode-activate-hook'"
@@ -30,7 +30,7 @@
       (error "Password not found for %S" params))))
 
 (defun my-nickserv-password (server)
-  (my-fetch-password :login "forcer" :machine "irc.freenode.net"))
+  (my-fetch-password :login "dama_ " :machine "irc.freenode.net"))
 
 (setq circe-network-options
       `(("Furnet"
@@ -128,14 +128,24 @@
 (global-set-key (kbd "<f5>") 'cycle-ispell-languages)
 
 (eval-after-load "flyspell"
-'(define-key flyspell-mode-map (kbd "C-ä") 'flyspell-correct-previous-word-generic))
+  '(define-key flyspell-mode-map (kbd "C-ä") 'flyspell-correct-previous-word-generic))
 
 ;; packages
-(setq eclim-executable "~/eclipse/eclim")
 (load "dired+")
 (diredp-toggle-find-file-reuse-dir 1)
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+
+(setq eclimd-autostart t)
+
+(defun my-java-mode-hook ()
+  (eclim-mode t))
+
+(add-hook 'java-mode-hook 'my-java-mode-hook)
+
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
 
 ;; mu4e settings
 (autoload 'mu4e "mu4e" "Launch mu4e and show the main window" t)
