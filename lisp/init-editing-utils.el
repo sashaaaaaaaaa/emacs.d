@@ -97,10 +97,6 @@
   (add-hook 'after-init-hook 'global-prettify-symbols-mode))
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3437adf67615b796f671f63fc14b96dd12a4cc2b
 (when (maybe-require-package 'symbol-overlay)
   (dolist (hook '(prog-mode-hook html-mode-hook yaml-mode-hook conf-mode-hook))
     (add-hook hook 'symbol-overlay-mode))
