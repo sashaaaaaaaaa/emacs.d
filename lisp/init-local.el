@@ -134,7 +134,7 @@
 (load "dired+")
 (diredp-toggle-find-file-reuse-dir 1)
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
 
 (setq eclimd-autostart t)
 
