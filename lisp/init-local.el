@@ -1,5 +1,20 @@
 (desktop-save-mode 0)
-(add-hook 'after-save-hook 'backup-each-save)
+;;(add-hook 'after-save-hook 'backup-each-save)
+(setq-default frame-title-format '("%b"))
+
+(defun mouse-start-rectangle (start-event)
+  (interactive "e")
+  (deactivate-mark)
+  (mouse-set-point start-event)
+  (rectangle-mark-mode +1)
+  (let ((drag-event))
+    (track-mouse
+      (while (progn
+               (setq drag-event (read-event))
+               (mouse-movement-p drag-event))
+        (mouse-set-point drag-event)))))
+
+(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
 
 ;; xah-fly-keys settings
 (require 'xah-fly-keys)
@@ -7,12 +22,22 @@
 (xah-fly-keys 1)
 ;; (add-hook 'xah-fly-command-mode-activate-hook 'xah-fly-save-buffer-if-file)
 
+(defun my-bindkey-xfk-insert-mode ()
+  "Define keys for `xah-fly-insert-mode-activate-hook'"
+  (interactive)
+  (define-key xah-fly-key-map (kbd "ö") (lambda () 
+	(interactive)
+	(insert (char-from-name "LATIN SMALL LETTER O WITH DIAERESIS")))
+    ;; more here
+    ))
+
 (defun my-bindkey-xfk-command-mode ()
   "Define keys for `xah-fly-command-mode-activate-hook'"
   (interactive)
   (define-key xah-fly-key-map (kbd "ö") 'xah-end-of-line-or-block)
   )
 
+(add-hook 'xah-fly-insert-mode-activate-hook 'my-bindkey-xfk-insert-mode)
 (add-hook 'xah-fly-command-mode-activate-hook 'my-bindkey-xfk-command-mode)
 
 ;; circe settings
@@ -49,9 +74,9 @@
          :host "chat.freenode.net"
          :port "6697"
          :tls 't
-         :nick "dama_"
+         :nick "sasha69"
          :nickserv-password my-nickserv-password
-         :channels (:after-auth "##marxism" "##traa")
+         :channels (:after-auth "##marxism")
          )
         ("Ponychat"
          :host "irc.eu.ponychat.net"
@@ -131,6 +156,13 @@
   '(define-key flyspell-mode-map (kbd "C-ä") 'flyspell-correct-previous-word-generic))
 
 ;; packages
+
+(define-key ivy-minibuffer-map (kbd "<up>") #'ivy-previous-line)
+
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
 (load "dired+")
 (diredp-toggle-find-file-reuse-dir 1)
 
@@ -154,8 +186,10 @@
 (setq mu4e-maildir "~/Maildir")
 (setq mu4e-get-mail-command "/usr/bin/mbsync -a"
       mu4e-update-interval 300)
-(setq mu4e-sent-folder "/vfemailsent")
-(setq mu4e-trash-folder "/vfemailtrash")
+(setq mu4e-sent-folder "/disroot/Sent")
+(setq mu4e-trash-folder "/disroot/Trash")
+(setq mu4e-drafts-folder "/disroot/Drafts")
+(setq mu4e-refile-folder "/disroot/Archive")
 
 (require 'mu4e-contrib)
 (setq mu4e-html2text-command 'mu4e-shr2text)
@@ -170,16 +204,16 @@
 (setq mu4e-change-filenames-when-moving t)
 
 (setq mu4e-maildir-shortcuts
-      '( ("/vfemail/INBOX"     . ?i)
-         ("/vfemailsent" . ?s)
-         ("/vfemailtrash" . ?t)))
+      '( ("/disroot/INBOX"     . ?i)
+         ("/disroot/Sent" . ?s)
+         ("/disroot/Trash" . ?t)))
 
-(setq user-mail-address "sasha@toothandmail.com"
+(setq user-mail-address "sashaa@disroot.org"
       user-full-name "Sasha Abbott"
       )
 
 (setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-smtp-server "mail.vfemail.net"
+      smtpmail-smtp-server "disroot.org"
       smtpmail-stream-type  'starttls
       smtpmail-smtp-service 587)
 
