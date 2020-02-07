@@ -1,6 +1,18 @@
 (desktop-save-mode 0)
-;;(add-hook 'after-save-hook 'backup-each-save)
 (setq-default frame-title-format '("%b"))
+
+(defun my-backup-file-name (fpath)
+  "Return a new file path of a given file path.
+If the new path's directories does not exist, create them."
+  (let* (
+         (backupRootDir "~/.emacs.d/backup/")
+         (filePath (replace-regexp-in-string "[A-Za-z]:" "" fpath )) ; remove Windows driver letter in path, for example, “C:”
+         (backupFilePath (replace-regexp-in-string "//" "/" (concat backupRootDir filePath "~") ))
+         )
+    (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
+    backupFilePath
+    )
+  )
 
 (defun mouse-start-rectangle (start-event)
   (interactive "e")
@@ -156,8 +168,7 @@
   '(define-key flyspell-mode-map (kbd "C-ä") 'flyspell-correct-previous-word-generic))
 
 ;; packages
-
-(define-key ivy-minibuffer-map (kbd "<up>") #'ivy-previous-line)
+(setq flycheck-global-modes '(not eclim-mode))
 
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
