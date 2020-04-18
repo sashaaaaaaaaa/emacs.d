@@ -1,4 +1,6 @@
-(desktop-save-mode 0)
+(load "~/.emacs.d/lisp/my-abbrev.el")
+
+;; (desktop-save-mode 0)
 (setq-default frame-title-format '("%b"))
 
 (defun my-backup-file-name (fpath)
@@ -13,6 +15,8 @@ If the new path's directories does not exist, create them."
     backupFilePath
     )
   )
+
+(setq make-backup-file-name-function 'my-backup-file-name)
 
 (defun mouse-start-rectangle (start-event)
   (interactive "e")
@@ -37,9 +41,9 @@ If the new path's directories does not exist, create them."
 (defun my-bindkey-xfk-insert-mode ()
   "Define keys for `xah-fly-insert-mode-activate-hook'"
   (interactive)
-  (define-key xah-fly-key-map (kbd "ö") (lambda () 
-	(interactive)
-	(insert (char-from-name "LATIN SMALL LETTER O WITH DIAERESIS")))
+  (define-key xah-fly-key-map (kbd "ö") (lambda ()
+	                                  (interactive)
+	                                  (insert (char-from-name "LATIN SMALL LETTER O WITH DIAERESIS")))
     ;; more here
     ))
 
@@ -67,88 +71,94 @@ If the new path's directories does not exist, create them."
       (error "Password not found for %S" params))))
 
 (defun my-nickserv-password (server)
-  (my-fetch-password :login "dama_ " :machine "irc.freenode.net"))
+  (my-fetch-password :login "sasha69" :machine "irc.freenode.net"))
+(defun my-znc-freenode-password (server)
+  (format "I275:%s"  (my-fetch-password :login "I275" :machine "freeznc.ru")))
 
 (setq circe-network-options
-      `(("Furnet"
+      `(("Quakenet"
+         :host "irc.quakenet.org"
+         :port "6667"
+         :nick "sasha69"
+         )
+        ("Espernet"
+         :host "irc.esper.net"
+         :port "6697"
+         :tls t
+         :nick "sasha69"
+         :nickserv-password my-nickserv-password
+         :channels ("#modarchive" "#nectarine")
+         )
+        ("Furnet"
          :host "eu.irc.furnet.org"
          :port "6697"
-         :tls 't
-         :nick "dama"
+         :tls t
          :nickserv-mask "nickserv!services@irc.furnet.org"
          :nickserv-identify-challenge "This nickname is registered and protected."
          :nickserv-identify-command "PRIVMSG NickServ :IDENTIFY {password}"
          :nickserv-identify-confirmation "Password accepted - you are now recognized."
-         :channels (:after-auth "#redditfurs" "#turri" "#tassu")
+         :channels (:after-auth "#turri" "#tassu")
+         :nickserv-password my-nickserv-password
+         )
+        ("Canternet"
+         :host "irc.canternet.org"
+         :port "6697"
+         :tls t
          :nickserv-password my-nickserv-password
          )
         ("Freenode"
          :host "chat.freenode.net"
          :port "6697"
-         :tls 't
+         :tls t
          :nick "sasha69"
          :nickserv-password my-nickserv-password
          :channels (:after-auth "##marxism")
          )
-        ("Ponychat"
-         :host "irc.eu.ponychat.net"
+        ("FreeZNC Freenode"
+         :host "freeznc.ru"
          :port "6697"
-         :tls 't
-         :nick "dama"
-         :nickserv-mask "nickserv!nickserv@services.ponychat.net"
-         :nickserv-identify-challenge "This nickname is registered."
-         :nickserv-identify-command "PRIVMSG NickServ :IDENTIFY {nick} {password}"
-         :nickserv-identify-confirmation "You are now identified for dama"
+         :tls t
+         :pass my-znc-freenode-password
+         :nick "sasha69"
          :nickserv-password my-nickserv-password
-         :channels (:after-auth "#brony.fi")
+         :channels (:after-auth "##marxism")
          )
         ("IRCnet"
-         :host "irc.cc.tut.fi"
+         :host "irc.fi.ircnet.net"
          :port "6667"
-         :nick "dama"
-         :channels ("#blanko" "#blanko.peli" "#blanko.2015")
+         :nick "sasha69"
+         :channels ("#blanko" "#revision" "#suomiscene")
          )
         ("Snoonet"
          :host "irc.snoonet.org"
          :port "6667"
-         :nick "dama"
          )
         ("I2P"
          :host "localhost"
          :port "6668"
-         :nick "dama"
          :channels (:after-auth "#leftsec")
          :nickserv-password my-nickserv-password
          :nickserv-identify-challenge "-NickServ- You have 30 seconds to identify to your nickname before it
     is changed."
          :nickserv-identify-command "PRIVMSG NickServ :IDENTIFY {password}"
-         :nickserv-identify-confirmation "You are now identified for dama."
+         :nickserv-identify-confirmation "You are now identified for sasha."
          :nickserv-mask "NickServ@services.irc.postman.i2p"
-         )))
+         )
+        ))
+
+(defun circe-command-KEEP (&optional ignored)
+  "/msg sasha69 haha")
 
 (autoload 'enable-circe-notifications "circe-notifications" nil t)
 (add-hook 'circe-server-connected-hook 'enable-circe-notifications)
 
 (defun my-irc-login ()
-  "Login into my usual channels."
+  "Login to my usual IRC networks."
   (interactive)
-  (eyebrowse-mode t)
-  (make-frame-command)
-  (next-multiframe-window)
-  (split-window-below)
-  (split-window-right)
-  (other-window 2)
-  (split-window-right)
-  (switch-to-buffer "##marxism")
-  (other-window 1)
-  (switch-to-buffer "#blanko")
-  (other-window 1)
-  (switch-to-buffer "#blanko.peli")
-  (other-window 1)
-  (switch-to-buffer "#blanko.2015")
-  (eyebrowse-switch-to-window-config-2)
-  (switch-to-buffer "##traa")
-  (eyebrowse-switch-to-window-config-1))
+  (circe "Freenode")
+  (circe "IRCnet")
+  (circe "Furnet")
+  (circe "Quakenet"))
 
 ;; flyspell settings
 (setq flyspell-correct-interface 'flyspell-correct-ivy)
@@ -168,8 +178,6 @@ If the new path's directories does not exist, create them."
   '(define-key flyspell-mode-map (kbd "C-ä") 'flyspell-correct-previous-word-generic))
 
 ;; packages
-(setq flycheck-global-modes '(not eclim-mode))
-
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -186,9 +194,13 @@ If the new path's directories does not exist, create them."
 
 (add-hook 'java-mode-hook 'my-java-mode-hook)
 
+(setq flycheck-global-modes '(not eclim-mode circe-mode text-mode org-mode))
+
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
+
+(company-emacs-eclim-setup)
 
 ;; mu4e settings
 (autoload 'mu4e "mu4e" "Launch mu4e and show the main window" t)
@@ -196,7 +208,7 @@ If the new path's directories does not exist, create them."
 
 (setq mu4e-maildir "~/Maildir")
 (setq mu4e-get-mail-command "/usr/bin/mbsync -a"
-      mu4e-update-interval 300)
+      mu4e-update-interval 1200)
 (setq mu4e-sent-folder "/disroot/Sent")
 (setq mu4e-trash-folder "/disroot/Trash")
 (setq mu4e-drafts-folder "/disroot/Drafts")
@@ -208,7 +220,7 @@ If the new path's directories does not exist, create them."
 (setq shr-color-visible-distance-min 5)
 
 (mu4e-maildirs-extension)
-(mu4e-alert-set-default-style 'libnotify)
+(mu4e-alert-set-default-style 'notifications)
 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
 (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 
@@ -231,5 +243,9 @@ If the new path's directories does not exist, create them."
 (fset 'my-move-to-trash "mt")
 (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
 (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
+
+;; key bindings
+(define-key xah-fly-key-map (kbd "<f8>") nil)
+(global-set-key (kbd "<f8>") 'other-frame)
 
 (provide 'init-local)
