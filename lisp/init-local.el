@@ -1,6 +1,6 @@
 (load "~/.emacs.d/lisp/my-abbrev.el")
 
-;; (desktop-save-mode 0)
+(desktop-save-mode 0)
 (setq-default frame-title-format '("%b"))
 
 (defun my-backup-file-name (fpath)
@@ -187,12 +187,12 @@ If the new path's directories does not exist, create them."
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
 
-(setq eclimd-autostart t)
+;;(setq eclimd-autostart t)
 
-(defun my-java-mode-hook ()
-  (eclim-mode t))
+;;(defun my-java-mode-hook ()
+;;  (eclim-mode t))
 
-(add-hook 'java-mode-hook 'my-java-mode-hook)
+;;(add-hook 'java-mode-hook 'my-java-mode-hook)
 
 (setq flycheck-global-modes '(not eclim-mode circe-mode text-mode org-mode))
 
@@ -200,7 +200,7 @@ If the new path's directories does not exist, create them."
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
 
-(company-emacs-eclim-setup)
+;;(company-emacs-eclim-setup)
 
 ;; mu4e settings
 (autoload 'mu4e "mu4e" "Launch mu4e and show the main window" t)
