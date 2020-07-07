@@ -8,7 +8,7 @@
 
   (when (maybe-require-package 'dante)
     (add-hook 'haskell-mode-hook 'dante-mode)
-    (after-load 'dante
+    (with-eval-after-load 'dante
       (flycheck-add-next-checker 'haskell-dante
                                  '(warning . haskell-hlint))))
 
@@ -31,13 +31,13 @@
 
     (defalias 'hindent-mode 'hindent-on-save-mode))
 
-  (after-load 'haskell-mode
+  (with-eval-after-load 'haskell-mode
     (define-key haskell-mode-map (kbd "C-c h") 'hoogle)
     (define-key haskell-mode-map (kbd "C-o") 'open-line))
 
 
-  (after-load 'page-break-lines
-    (push 'haskell-mode page-break-lines-modes)))
+  (with-eval-after-load 'page-break-lines
+    (add-to-list 'page-break-lines-modes 'haskell-mode)))
 
 
 
