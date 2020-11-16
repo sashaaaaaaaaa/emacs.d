@@ -9,7 +9,7 @@
 ;; Produce backtraces when errors occur: can be helpful to diagnose startup issues
 ;;(setq debug-on-error t)
 
-(let ((minver "24.4"))
+(let ((minver "24.5"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 (when (version< emacs-version "25.1")
@@ -105,6 +105,7 @@
 (require 'init-ruby)
 (require 'init-rails)
 (require 'init-sql)
+(require 'init-ocaml)
 (require 'init-nim)
 (require 'init-rust)
 (require 'init-toml)
